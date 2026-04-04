@@ -1,21 +1,21 @@
 name: Go Build and Test
 on:
   push:
-    branches: [ main ]
+    branches: [master]
   pull_request:
-    branches: [ main ]
+    branches: [master]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: [actions/checkout@v4](https://github.com)
+        uses: actions/checkout@v4
 
       - name: Set up Go
-        uses: [actions/setup-go@v5](https://github.com/actions/setup-go)
+        uses: actions/setup-go@v5
         with:
-          go-version: '1.25.8' # Or use 'go-version-file: "go.mod"'
+          go-version: "1.25.8" # Or use 'go-version-file: "go.mod"'
 
       - name: Install dependencies
         run: go mod download
