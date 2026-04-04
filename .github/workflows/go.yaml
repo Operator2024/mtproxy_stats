@@ -21,7 +21,14 @@ jobs:
         run: go mod download
 
       - name: Build
-        run: go build -v ./...
+        run: make build ./...
 
       - name: Test
         run: go test -v ./...
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mtproto_stats
+          path: app/
+          retention-days: 1
