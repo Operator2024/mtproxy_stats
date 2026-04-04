@@ -1,0 +1,17 @@
+BINARY_NAME=mtproxy_stats
+VERSION=1.0.0
+DATE=$(shell date -u +'%Y-%m-%d %I:%M:%S%p %Z')
+
+build:
+	GOARCH=amd64 GOOS=linux go build -o ${BINARY_NAME}-ubuntu -ldflags "-X 'main.version=${VERSION}' -X 'main.date=${DATE}'" ./mtproxy_stats.go
+	GOARCH=amd64 GOOS=windows go build -o ${BINARY_NAME}-win.exe -ldflags "-X 'main.version=${VERSION}' -X 'main.date=${DATE}'" ./mtproxy_stats.go
+
+run:
+	./${BINARY_NAME}-ubuntu
+
+build_and_run: build run
+
+clean:
+	go clean
+	rm ${BINARY_NAME}
+	rm ${BINARY_NAME}-win.exe
