@@ -110,8 +110,11 @@ func (r *LogRotator) RotateIfNeeded() error {
 
 // NewLogParser создает новый парсер
 func NewLogParser(logFile string) *LogParser {
-	// Регулярное выражение для извлечения времени: [6][2026-03-31 17:38:12.472158 local]
-	timeRegex := regexp.MustCompile(`\[\d+\]\[([0-9]{4}-[0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2})\.[0-9]+ local\]`)
+	// Регулярное выражение для извлечения времени:
+	// [6][2026-03-31 17:38:12.472158 local]
+	// [6][2026-04-05T05:21:41+00:00.1775366501.123 local]
+	timeRegex := regexp.MustCompile(`\[\d+\]\[(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2}:\d{2})(?:[+-]\d{2}:\d{2})?\.\d+(\.\d*|) local\]`)
+
 	// Регулярное выражение для извлечения IP из "connection from"
 	ipRegex := regexp.MustCompile(`connection from (\d+\.\d+\.\d+\.\d+):\d+`)
 
@@ -156,6 +159,7 @@ func (p *LogParser) Parse() error {
 		// Парсим время
 		timeStr := timeMatches[1] + " " + timeMatches[2]
 		timestamp, err := time.Parse("2006-01-02 15:04:05", timeStr)
+		fmt.Println(timeMatches, err)
 		if err != nil {
 			continue
 		}
@@ -447,6 +451,7 @@ func main() {
 		fmt.Printf("Options:\n")
 		flag.PrintDefaults()
 		fmt.Printf("\nExamples:\n")
+		fmt.Printf("  %s -f /path/to/mtproxy.log  # Use specific log file\n", os.Args[0])
 		fmt.Printf("  %s -t -c                    # Show IPs and counts for today\n", os.Args[0])
 		fmt.Printf("  %s -l 6 -c -o report.txt   # Last 6 hours with counts, save to file\n", os.Args[0])
 		fmt.Printf("  %s -d 2026-03-31           # Show IPs for specific date\n", os.Args[0])
