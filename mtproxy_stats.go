@@ -7,11 +7,19 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"runtime"
 	"slices"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
+)
+
+var (
+	version        string
+	date           string
+	buildDate      time.Time
+	goBuildVersion string
 )
 
 func getEnv(key string, defaultValue int) int {
@@ -159,7 +167,6 @@ func (p *LogParser) Parse() error {
 		// Парсим время
 		timeStr := timeMatches[1] + " " + timeMatches[2]
 		timestamp, err := time.Parse("2006-01-02 15:04:05", timeStr)
-		fmt.Println(timeMatches, err)
 		if err != nil {
 			continue
 		}
@@ -429,6 +436,11 @@ func main() {
 	// Параметры командной строки
 	var cfg Config
 
+	if version != "" {
+		goBuildVersion = runtime.Version()
+		buildDate, _ = time.Parse("2006-01-02 03:04:05PM MST", date)
+	}
+
 	flag.StringVar(&cfg.LogFile, "f", "logs/mtproxy.log", "Log file path")
 	flag.StringVar(&cfg.Date, "d", "", "Filter by date (YYYY-MM-DD)")
 	flag.StringVar(&cfg.Since, "s", "", "Filter since time (YYYY-MM-DD HH:MM:SS)")
@@ -447,7 +459,8 @@ func main() {
 	// Показываем помощь
 	if cfg.Help {
 		fmt.Printf("MTProxy Log Analyzer\n\n")
-		fmt.Printf("Usage: %s [options]\n\n", os.Args[0])
+		fmt.Printf("Usage (Version: %s, build info: %s [%s]): %s [options]\n\n", version, goBuildVersion,
+			buildDate.Format("2006-01-02 03:04:05PM MST"), os.Args[0])
 		fmt.Printf("Options:\n")
 		flag.PrintDefaults()
 		fmt.Printf("\nExamples:\n")
@@ -457,6 +470,7 @@ func main() {
 		fmt.Printf("  %s -d 2026-03-31           # Show IPs for specific date\n", os.Args[0])
 		fmt.Printf("  %s -i                       # Show log information\n", os.Args[0])
 		fmt.Printf("  %s -c -top 10               # Show top 10 IPs by connections\n", os.Args[0])
+
 		return
 	}
 
