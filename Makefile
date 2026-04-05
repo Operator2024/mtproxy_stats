@@ -1,5 +1,5 @@
 BINARY_NAME=mtproxy_stats
-VERSION=1.0.1
+VERSION=1.0.2
 DATE=$(shell date -u +'%Y-%m-%d %I:%M:%S%p %Z')
 
 build:
